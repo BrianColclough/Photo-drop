@@ -1,0 +1,42 @@
+name: PhotoDrop
+
+options:
+  bundleIdPrefix: com.briancolclough
+  deploymentTarget:
+    macOS: "26.0"
+  createIntermediateGroups: true
+
+packages:
+  PhotoDropCore:
+    path: Core
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    ARCHS: arm64
+    DEVELOPMENT_TEAM: YTSN4CH5SH
+    CODE_SIGN_STYLE: Automatic
+    CODE_SIGN_IDENTITY: Apple Development
+
+targets:
+  PhotoDrop:
+    type: application
+    platform: macOS
+    sources:
+      - PhotoDrop
+    dependencies:
+      - package: PhotoDropCore
+        product: PhotoDropCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.briancolclough.PhotoDrop
+        PRODUCT_NAME: Photo Drop
+        PRODUCT_MODULE_NAME: PhotoDrop
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_FILE: PhotoDrop/Info.plist
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.photography
+        CODE_SIGN_ENTITLEMENTS: PhotoDrop/PhotoDrop.entitlements
+        ENABLE_HARDENED_RUNTIME: YES
+    scheme: {}

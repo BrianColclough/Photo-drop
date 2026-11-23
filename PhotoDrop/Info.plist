@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Photo Drop needs your Photos library so it can find your album and add new photos and videos from your drive to it.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Photo Drop adds new photos and videos from your drive to your Photos library.</string>
+</dict>
+</plist>
