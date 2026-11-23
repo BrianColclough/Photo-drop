@@ -341,4 +341,50 @@ func waitForStragglers() async throws {
             #expect(harness.importer.requests.count == 2)
         }
     }
+
+    @Test func emptyFileStopsBeingWaitedForAndIsImportedOnceFilledIn() async throws {
+        var timing = ImportCoordinator.Timing.fast
+        timing.emptyFileWait = 1
+        try await withHarness(timing) { harness in
+            let waitingCounts = Mutex<[Int]>([])
+            let updates = harness.coordinator.updates
+            let listener = Task {
+                for await update in updates {
+                    if case .status(let status) = update { waitingCounts.withLock { $0.append(status.waitingCount) } }
+                }
+            }
+            defer { listener.cancel() }
+
+            try await harness.start()
+            let url = harness.folder.appendingPathComponent("DSC017.jpg")
+            #expect(FileManager.default.createFile(atPath: url.path, contents: nil))
+
+            #expect(try await eventually { waitingCounts.withLock { $0.contains(1) && $0.last == 0 } })
+            #expect(harness.importer.requests.isEmpty)
+
+            try Data("filled in at last".utf8).write(to: url)
+            #expect(try await eventually { harness.importer.requests.count == 1 })
+            #expect(try harness.importedPaths().count == 1)
+        }
+    }
+
+    @Test func fileThatKeepsFailingIsRetriedLessAndLessOften() async throws {
+        var timing = ImportCoordinator.Timing.fast
+        timing.retryEvery = 0.3
+        try await withHarness(timing) { harness in
+            harness.importer.fail(["DSC018.jpg"])
+            let url = try harness.write("DSC018.jpg")
+            let fingerprint = try FileFingerprint(url: url)
+            let modified = try #require(FileSnapshot.read(at: url)?.modified)
+            for _ in 0..<10 {
+                try harness.ledger.markFailed(fingerprint, url: url, modified: modified, error: "Fake failure")
+            }
+
+            // Starting to watch tries every failed file once, however often it has failed.
+            try await harness.start()
+            #expect(try await eventually { harness.importer.requests.count == 1 })
+            try await Task.sleep(for: .seconds(5))
+            #expect(harness.importer.requests.count == 1)
+        }
+    }
 }

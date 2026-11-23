@@ -129,14 +129,14 @@ When Photo Drop finds the record gone, it asks the first-time question again, ju
 
 - **File types.** Photos: `jpg`, `jpeg`, `heic`, `heif`, `png`, `tif`, `tiff`. RAW: `dng`, `arw`, `cr2`, `cr3`, `nef`, `raf`, `orf`, `rw2`. Videos: `mov`, `mp4`. Capital letters make no difference. Everything else is ignored.
 - **Hidden files and folders are skipped.** That means anything whose name starts with a dot, and everything inside such a folder.
-- **It waits until a file has finished copying.** A file is imported once its size and date have stayed the same for 60 seconds, or however long you set in the window. Empty files wait until they have something in them.
+- **It waits until a file has finished copying.** A file is imported once its size and date have stayed the same for 60 seconds, or however long you set in the window. Empty files wait until they have something in them; one that stays empty for 10 minutes is left alone until it changes.
 - **JPEG + RAW become one item.** A JPEG and a RAW file with the same name in the same folder are added to Photos as a single photo. Both must have stopped changing first.
 - **Originals are never moved, changed or deleted.** Photos makes its own copy. Photo Drop only has permission to read the folder.
 - **A file counts as already imported when its name, size and first 1 MB of contents all match.** So:
   - moving a file to another folder, or renaming or moving folders, never imports it again;
   - exporting a picture again with different edits does import it again, as a new photo;
   - renaming the file itself also imports it again.
-- **Failed imports are tried again**: the next time any file changes in the folder (at most once a minute), every 10 minutes, and whenever watching starts.
+- **Failed imports are tried again, less and less often.** The wait starts at a minute and doubles after each failure, up to once a day. When the wait is over, the file is tried the next time any file changes in the folder, or at the next 10-minute check. Whenever watching starts, every failed file is tried straight away.
 - **Unplugged drive.** The status shows "Drive not connected". Plug the drive back in and Photo Drop carries on by itself.
 - **It catches up.** Whenever watching starts (the app opens, the switch goes on, the drive comes back) it checks the whole folder for anything not yet imported.
 
@@ -213,7 +213,7 @@ On your Mac:
 
 ## Known limits
 
-- A file that always fails is tried again every 10 minutes for as long as it stays in the folder. It never gives up. The red row in the list and the log say why it fails.
+- A file that always fails is tried again for as long as it stays in the folder, slowing down to once a day. It never gives up. The red row in the list and the log say why it fails.
 - "Open at login" opens the copy of the app it was switched on from. If you move the app, switch it off and on again.
 - A RAW file is only joined to its JPEG when both arrive together. If the JPEG was already imported and the RAW turns up later, the RAW becomes a separate photo. Only JPEG pairs with RAW; HEIC, TIFF and PNG do not.
 - A photo you delete from Photos is not added again, because the file is still in the record.

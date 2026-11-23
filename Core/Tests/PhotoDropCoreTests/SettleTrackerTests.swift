@@ -67,17 +67,58 @@ import Testing
         #expect(tracker.pendingCount == 0)
     }
 
-    @Test func zeroByteFileIsNeverReady() {
+    @Test func zeroByteFileWaitsUntilItHasContents() {
         var tracker = SettleTracker()
         var disk = [photo: snapshot(0)]
         tracker.track(photo, snapshot: snapshot(0), now: start)
 
-        #expect(tracker.releaseReady(now: start + 3600) { disk[$0] } == [])
+        #expect(tracker.releaseReady(now: start + 599) { disk[$0] } == [])
         #expect(tracker.pendingCount == 1)
 
         disk[photo] = snapshot(500)
-        #expect(tracker.releaseReady(now: start + 3601) { disk[$0] } == [])
-        #expect(tracker.releaseReady(now: start + 3661) { disk[$0] } == [photo])
+        #expect(tracker.releaseReady(now: start + 600) { disk[$0] } == [])
+        #expect(tracker.releaseReady(now: start + 660) { disk[$0] } == [photo])
+    }
+
+    @Test func fileThatStaysEmptyIsDroppedUntilItIsSeenAgain() {
+        var tracker = SettleTracker(emptyFileWait: 300)
+        var disk = [photo: snapshot(0)]
+        tracker.track(photo, snapshot: snapshot(0), now: start)
+
+        #expect(tracker.releaseReady(now: start + 299) { disk[$0] } == [])
+        #expect(tracker.pendingCount == 1)
+        #expect(tracker.releaseReady(now: start + 300) { disk[$0] } == [])
+        #expect(tracker.pendingCount == 0)
+
+        disk[photo] = snapshot(500)
+        tracker.track(photo, snapshot: snapshot(500), now: start + 5000)
+        #expect(tracker.releaseReady(now: start + 5060) { disk[$0] } == [photo])
+    }
+
+    @Test func touchingAnEmptyFileRestartsItsWait() {
+        var tracker = SettleTracker(emptyFileWait: 300)
+        var disk = [photo: snapshot(0)]
+        tracker.track(photo, snapshot: snapshot(0), now: start)
+
+        disk[photo] = snapshot(0, modifiedOffset: 5)
+        #expect(tracker.releaseReady(now: start + 200) { disk[$0] } == [])
+        #expect(tracker.releaseReady(now: start + 499) { disk[$0] } == [])
+        #expect(tracker.pendingCount == 1)
+        #expect(tracker.releaseReady(now: start + 500) { disk[$0] } == [])
+        #expect(tracker.pendingCount == 0)
+    }
+
+    @Test func droppedEmptyFileNoLongerHoldsItsPairBack() {
+        let jpeg = file("/root/a/DSC_7.JPG")
+        let raw = file("/root/a/DSC_7.ARW")
+        var tracker = SettleTracker(emptyFileWait: 300)
+        let disk = [jpeg: snapshot(100), raw: snapshot(0)]
+        tracker.track(jpeg, snapshot: snapshot(100), now: start)
+        tracker.track(raw, snapshot: snapshot(0), now: start)
+
+        #expect(tracker.releaseReady(now: start + 299) { disk[$0] } == [])
+        #expect(tracker.releaseReady(now: start + 300) { disk[$0] } == [jpeg])
+        #expect(tracker.pendingCount == 0)
     }
 
     @Test func intervalIsConfigurable() {

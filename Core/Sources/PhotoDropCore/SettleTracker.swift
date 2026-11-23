@@ -25,10 +25,12 @@ public struct SettleTracker: Sendable {
     }
 
     public var settleInterval: TimeInterval
+    public var emptyFileWait: TimeInterval
     private var pending: [String: Pending] = [:]
 
-    public init(settleInterval: TimeInterval = 60) {
+    public init(settleInterval: TimeInterval = 60, emptyFileWait: TimeInterval = 600) {
         self.settleInterval = settleInterval
+        self.emptyFileWait = emptyFileWait
     }
 
     public var pendingCount: Int { pending.count }
@@ -50,6 +52,8 @@ public struct SettleTracker: Sendable {
                 pending[path] = nil
             }
         }
+        // Whoever fills an empty file in later sets off a file event, which brings it back.
+        pending = pending.filter { !hasStayedEmpty($0.value, now: now) }
 
         let unsettledNames = Set(pending.values.filter { !isSettled($0, now: now) }.map { PairKey($0.url) })
         let ready = pending.values
@@ -64,5 +68,9 @@ public struct SettleTracker: Sendable {
 
     private func isSettled(_ entry: Pending, now: Date) -> Bool {
         entry.snapshot.size > 0 && now.timeIntervalSince(entry.unchangedSince) >= settleInterval
+    }
+
+    private func hasStayedEmpty(_ entry: Pending, now: Date) -> Bool {
+        entry.snapshot.size == 0 && now.timeIntervalSince(entry.unchangedSince) >= emptyFileWait
     }
 }

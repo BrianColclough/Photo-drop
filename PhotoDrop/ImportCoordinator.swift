@@ -11,6 +11,8 @@ actor ImportCoordinator {
         var poll: TimeInterval = 5
         var retryThrottle: TimeInterval = 60
         var retryEvery: TimeInterval = 600
+        var longestRetryWait: TimeInterval = 86_400
+        var emptyFileWait: TimeInterval = 600
         var watcherLatency: TimeInterval = 1
         var eventGrace: TimeInterval = 3
     }
@@ -91,7 +93,7 @@ actor ImportCoordinator {
         session += 1
         let current = session
         root = newRoot
-        tracker = SettleTracker(settleInterval: settleInterval ?? timing.settle)
+        tracker = SettleTracker(settleInterval: settleInterval ?? timing.settle, emptyFileWait: timing.emptyFileWait)
         recordExistingSince = since
         lastRetry = .distantPast
 
@@ -391,7 +393,8 @@ actor ImportCoordinator {
         var requeued = 0
         for entry in (try? ledger.failedEntries()) ?? [] {
             let url = entry.url
-            guard url.path.hasPrefix(root.path + "/"),
+            guard now.timeIntervalSince(entry.timestamp) >= retryWait(afterAttempts: entry.attempts),
+                  url.path.hasPrefix(root.path + "/"),
                   MediaFilter.accepts(url, under: root),
                   let snapshot = FileSnapshot.read(at: url) else { continue }
             tracker.track(url, snapshot: snapshot, now: now)
@@ -400,6 +403,11 @@ actor ImportCoordinator {
         if requeued > 0 {
             log("Trying \(requeued) failed files again")
         }
+    }
+
+    // Doubles after each failure, so a file that can never be imported is not handed to Photos all day.
+    private func retryWait(afterAttempts attempts: Int) -> TimeInterval {
+        min(timing.retryThrottle * pow(2, Double(max(attempts, 1) - 1)), timing.longestRetryWait)
     }
 
     // MARK: - Status
