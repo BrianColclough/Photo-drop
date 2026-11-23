@@ -49,6 +49,7 @@ targets:
     sources:
       - PhotoDropTests
       - PhotoDrop/ImportCoordinator.swift
+      - PhotoDrop/ImportRecord.swift
       - PhotoDrop/FolderWatcher.swift
       - PhotoDrop/PhotosImporter.swift
     dependencies:

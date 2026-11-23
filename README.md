@@ -37,7 +37,7 @@ cp -R "build/Build/Products/Debug/Photo Drop.app" /Applications/
 
 Run it from there. "Open at login" remembers the copy you switched it on from, so only switch it on in the Applications copy.
 
-Every copy of the app shares the same settings and the same record of imported files. Do not run two copies at once (for example one from Xcode and one from Applications): nothing stops both from adding the same new file.
+Every copy of the app shares the same settings and the same record of imported files, so only one copy runs at a time. If you open a second copy (for example one from Xcode while the Applications copy is running), it brings the running one to the front and quits. To switch copies, quit the running one first.
 
 ### After adding, removing or renaming source files
 
@@ -56,11 +56,14 @@ The window has:
 - **Watched folder** and a **Choose Folder…** button.
 - **Photos album**: pick an existing album, or "New album…" to name a new one. The album is created in Photos when watching starts.
 - **Watch for new photos**: the on/off switch. It stays off until you have chosen a folder.
+- **Import a file after it has been unchanged for 60 seconds**: how long Photo Drop waits to be sure a file has finished copying. Click the arrows to change it, in steps of 5 from 5 to 600 seconds. A change takes effect straight away.
 - A status line next to the switch, for example "Watching • 12 imported today", "Waiting for 3 files to finish copying", "Drive not connected" or "Photos access needed".
 - A list of the last 100 imports and failures, with file, folder, time and result. Failures are shown in red with the reason.
 - **Open at login**.
 
 Closing the window does not quit the app; it keeps watching. Click the Dock icon to get the window back, and use Cmd-Q to quit.
+
+The File menu has one more command, **Reset Import Record…**, explained below.
 
 ### The first time you watch a folder
 
@@ -69,7 +72,7 @@ Photo Drop asks "What about the photos already in this folder?" Pick one:
 - **Treat everything already in this folder as imported**: skips everything that is there now and only adds what arrives from then on. Choose this if those pictures are already in Photos.
 - **Import everything now**: adds every photo and video in the folder to Photos.
 
-It asks once per folder.
+It asks once per folder, and again after the record of imported files is reset.
 
 ## Photos access
 
@@ -93,38 +96,40 @@ Open the app and turn the switch on, and macOS asks again.
 
 ## Reset the record of imported files
 
-Photo Drop keeps a record of every file it has imported or been told to skip. To wipe it and start over:
+Photo Drop keeps a record of every file it has imported or been told to skip. To wipe it and start over, choose **File › Reset Import Record…** and confirm with **Reset**.
+
+- Photo Drop forgets which files it has already imported, and the list in the window empties.
+- Watching is switched off.
+- The next time you switch watching on, it asks the first-time question again.
+
+Nothing in Photos or in the folder is changed.
+
+**Read this before you answer that question.** The record is the app's only memory. It does not look inside Photos to see what is already there.
+
+- "Treat everything already in this folder as imported" rebuilds the record and adds nothing.
+- "Import everything now" adds everything to Photos again, as duplicates of whatever is already there.
+
+### Deleting the record by hand
+
+You should not need this, but it works too:
 
 1. Quit Photo Drop with Cmd-Q. Closing the window is not enough.
-2. Delete the record:
+2. Delete the record in Terminal:
 
    ```
    rm ~/Library/Containers/com.briancolclough.PhotoDrop/Data/Library/Application\ Support/PhotoDrop/ledger.sqlite*
    ```
 
-   macOS may ask whether Terminal may access data from other apps. Allow it.
-3. Make the app ask the first-time question again:
+   macOS guards each app's data, so it may ask whether Terminal may access data from other apps. Allow it. If the command still says "Operation not permitted", use the menu command instead.
+3. Open Photo Drop.
 
-   ```
-   defaults delete com.briancolclough.PhotoDrop preparedFolders
-   defaults delete com.briancolclough.PhotoDrop recordingExistingStarted
-   ```
-
-   The second command usually says the setting was not found. That is fine.
-4. Open Photo Drop.
-
-**Read this before you do it.** The record is the app's only memory. It does not look inside Photos to see what is already there.
-
-- If you do step 2 but skip step 3, there is no question. As soon as watching starts (straight away when the app opens, if the switch was left on) every photo and video in the folder is added to Photos again, as duplicates.
-- With step 3, you get the first-time question. "Treat everything already in this folder as imported" rebuilds the record and adds nothing. "Import everything now" adds everything to Photos again, as duplicates of whatever is already there.
-
-To get the first-time question again without wiping the record, do step 3 on its own.
+When Photo Drop finds the record gone, it asks the first-time question again, just as it does after the menu command. The difference is that the watching switch is left as it was, so if it was on, the question comes up as soon as the app opens.
 
 ## The rules it follows
 
 - **File types.** Photos: `jpg`, `jpeg`, `heic`, `heif`, `png`, `tif`, `tiff`. RAW: `dng`, `arw`, `cr2`, `cr3`, `nef`, `raf`, `orf`, `rw2`. Videos: `mov`, `mp4`. Capital letters make no difference. Everything else is ignored.
 - **Hidden files and folders are skipped.** That means anything whose name starts with a dot, and everything inside such a folder.
-- **It waits until a file has finished copying.** A file is imported once its size and date have stayed the same for 60 seconds. Empty files wait until they have something in them.
+- **It waits until a file has finished copying.** A file is imported once its size and date have stayed the same for 60 seconds, or however long you set in the window. Empty files wait until they have something in them.
 - **JPEG + RAW become one item.** A JPEG and a RAW file with the same name in the same folder are added to Photos as a single photo. Both must have stopped changing first.
 - **Originals are never moved, changed or deleted.** Photos makes its own copy. Photo Drop only has permission to read the folder.
 - **A file counts as already imported when its name, size and first 1 MB of contents all match.** So:
@@ -137,15 +142,11 @@ To get the first-time question again without wiping the record, do step 3 on its
 
 ### Changing the 60-second wait
 
-```
-defaults write com.briancolclough.PhotoDrop settleSeconds -int 30
-```
+Use the arrows next to "Import a file after it has been unchanged for 60 seconds" in the window. The wait can be anything from 5 to 600 seconds, and the app remembers it.
 
-Then turn the "Watch for new photos" switch off and on again. The log confirms it with a line like "files must be unchanged for 30s"; if it still shows the old number, quit and reopen the app. To go back to 60:
+A change takes effect straight away, even for files that are already waiting. While watching is on, the log confirms it with a line like "Files must now be unchanged for 30s".
 
-```
-defaults delete com.briancolclough.PhotoDrop settleSeconds
-```
+Changing it from Terminal with `defaults write` is not reliable: macOS may block Terminal from touching the app's settings.
 
 ## The log
 
@@ -180,18 +181,19 @@ In this repository:
 ```
 project.yml                  Project settings. PhotoDrop.xcodeproj is generated from this.
 PhotoDrop/                   The app
-  PhotoDropApp.swift         Starts the app; keeps it running when the window is closed
+  PhotoDropApp.swift         Starts the app; keeps it running when the window is closed; one copy at a time
   MainView.swift             The window
   AppModel.swift             Ties it together: settings, status text, the first-time question
   FolderAccess.swift         Remembers the chosen folder; notices the drive coming and going
   FolderWatcher.swift        Hears from macOS when files in the folder change
   ImportCoordinator.swift    Checks the folder, waits for files, imports them, retries failures
+  ImportRecord.swift         Remembers which folders have had the first-time question; resets the record
   PhotosImporter.swift       Finds or creates the album and adds files to Photos
   LoginItem.swift            Open at login
   FileLog.swift              Writes the log
   Info.plist                 The wording macOS shows when asking for Photos access
   PhotoDrop.entitlements     The permissions the app asks macOS for
-PhotoDropTests/              Tests for the import flow
+PhotoDropTests/              Tests for the import flow and for resetting the record
 Core/                        The rules, as a separate Swift package with its own tests
   Sources/PhotoDropCore/
     MediaFilter.swift        Which files count
@@ -206,7 +208,7 @@ build/                       Output of the Terminal build (not in git)
 On your Mac:
 
 - Record of imported files: `~/Library/Containers/com.briancolclough.PhotoDrop/Data/Library/Application Support/PhotoDrop/ledger.sqlite`
-- Settings: `~/Library/Containers/com.briancolclough.PhotoDrop/Data/Library/Preferences/com.briancolclough.PhotoDrop.plist` (change them with the `defaults` commands above)
+- Settings: `~/Library/Containers/com.briancolclough.PhotoDrop/Data/Library/Preferences/com.briancolclough.PhotoDrop.plist` (macOS may block Terminal from changing these; use the window and the menu command)
 - Log: `~/Library/Logs/PhotoDrop.log`
 
 ## Known limits

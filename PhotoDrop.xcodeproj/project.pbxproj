@@ -17,18 +17,23 @@
 		60F18B54EB1279BEDF11E9BD /* FolderAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6335069E9F76FCC59076122 /* FolderAccess.swift */; };
 		68C94AC442F9AB3ED3337DCF /* ImportCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D2C544CFA24F3A1DE8F1599 /* ImportCoordinator.swift */; };
 		734D003A0A2779AC67F0FD4B /* FolderWatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95D7EAF5A3E54605E3991516 /* FolderWatcher.swift */; };
+		81BBC3C129A4A35E8A6B8C38 /* ImportRecordTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8F425913E30EA3F03F1B6B /* ImportRecordTests.swift */; };
+		9F31B0D352FC550FE339B0B5 /* ImportRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C708B06E267251E640291B6 /* ImportRecord.swift */; };
 		A3CAE663755C72706A928532 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5CD8B1B290E6E314010FB9 /* MainView.swift */; };
 		B5DE6B2C7568BFDAB87BA2B0 /* PhotoDropCore in Frameworks */ = {isa = PBXBuildFile; productRef = 829C8C212800F57CE35C86F5 /* PhotoDropCore */; };
 		B9ED4484BC97539DE06F2C0F /* LoginItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880BACCA1CF1FFD0F4501550 /* LoginItem.swift */; };
 		BB6E66720112E14CE4C4FB4E /* FileLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B0EA905065FEB3EF168DD /* FileLog.swift */; };
+		D5A17B5CD2B59C154D77F259 /* ImportRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C708B06E267251E640291B6 /* ImportRecord.swift */; };
 		EF79CEC24665D08749838FBB /* FolderWatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95D7EAF5A3E54605E3991516 /* FolderWatcher.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0BC0241DFD5B71FBD74CBD8C /* ImportCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportCoordinatorTests.swift; sourceTree = "<group>"; };
+		0C708B06E267251E640291B6 /* ImportRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportRecord.swift; sourceTree = "<group>"; };
 		1E05F264AD88B8B7C7385ED4 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		21048068EE446115A029DA71 /* PhotoDropTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PhotoDropTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D2C544CFA24F3A1DE8F1599 /* ImportCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportCoordinator.swift; sourceTree = "<group>"; };
+		4C8F425913E30EA3F03F1B6B /* ImportRecordTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportRecordTests.swift; sourceTree = "<group>"; };
 		4E5CD8B1B290E6E314010FB9 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		5FA233553F5B0BC709DCBACB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		86596DAEEB6C2EDE0F6764D7 /* PhotoDrop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotoDrop.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -66,6 +71,7 @@
 			isa = PBXGroup;
 			children = (
 				0BC0241DFD5B71FBD74CBD8C /* ImportCoordinatorTests.swift */,
+				4C8F425913E30EA3F03F1B6B /* ImportRecordTests.swift */,
 			);
 			path = PhotoDropTests;
 			sourceTree = "<group>";
@@ -88,6 +94,7 @@
 				C6335069E9F76FCC59076122 /* FolderAccess.swift */,
 				95D7EAF5A3E54605E3991516 /* FolderWatcher.swift */,
 				3D2C544CFA24F3A1DE8F1599 /* ImportCoordinator.swift */,
+				0C708B06E267251E640291B6 /* ImportRecord.swift */,
 				5FA233553F5B0BC709DCBACB /* Info.plist */,
 				880BACCA1CF1FFD0F4501550 /* LoginItem.swift */,
 				4E5CD8B1B290E6E314010FB9 /* MainView.swift */,
@@ -206,6 +213,8 @@
 				EF79CEC24665D08749838FBB /* FolderWatcher.swift in Sources */,
 				68C94AC442F9AB3ED3337DCF /* ImportCoordinator.swift in Sources */,
 				33F53C48C595746EC52BAD14 /* ImportCoordinatorTests.swift in Sources */,
+				9F31B0D352FC550FE339B0B5 /* ImportRecord.swift in Sources */,
+				81BBC3C129A4A35E8A6B8C38 /* ImportRecordTests.swift in Sources */,
 				5763ED125037D1AE450553EE /* PhotosImporter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -219,6 +228,7 @@
 				60F18B54EB1279BEDF11E9BD /* FolderAccess.swift in Sources */,
 				734D003A0A2779AC67F0FD4B /* FolderWatcher.swift in Sources */,
 				178700C69FB8445852867C1E /* ImportCoordinator.swift in Sources */,
+				D5A17B5CD2B59C154D77F259 /* ImportRecord.swift in Sources */,
 				B9ED4484BC97539DE06F2C0F /* LoginItem.swift in Sources */,
 				A3CAE663755C72706A928532 /* MainView.swift in Sources */,
 				06B2AF065C011A4A247E3DA9 /* PhotoDropApp.swift in Sources */,

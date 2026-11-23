@@ -87,6 +87,27 @@ import Testing
         }
     }
 
+    @Test func closedLedgerRefusesWorkAndItsFileCanBeDeletedAndStartedAfresh() throws {
+        try withTempDirectory { directory in
+            let url = try writeFile("photos/IMG_1.jpg", in: directory, contents: bytes(4000, filledWith: 1), modified: modified)
+            let ledger = try openLedger(in: directory)
+            let fingerprint = try newFingerprint(ledger, url)
+            try ledger.markImported(fingerprint, url: url, modified: modified, assetID: nil)
+
+            ledger.close()
+            #expect(throws: LedgerError.self) { try ledger.entryCount() }
+            #expect(throws: LedgerError.self) {
+                try ledger.markImported(fingerprint, url: url, modified: modified, assetID: nil)
+            }
+            try FileManager.default.removeItem(at: directory.appendingPathComponent("support/ledger.sqlite"))
+
+            let fresh = try openLedger(in: directory)
+            #expect(try fresh.entryCount() == 0)
+            ledger.close()
+            #expect(try fresh.entryCount() == 0)
+        }
+    }
+
     @Test func fileMovedToARenamedFolderIsStillHandledAndThenTakesTheFastPath() throws {
         try withTempDirectory { directory in
             let ledger = try openLedger(in: directory)

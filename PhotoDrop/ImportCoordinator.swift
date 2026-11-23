@@ -132,6 +132,12 @@ actor ImportCoordinator {
         }
     }
 
+    func setSettleInterval(_ seconds: TimeInterval) {
+        guard root != nil, tracker.settleInterval != seconds else { return }
+        tracker.settleInterval = seconds
+        log("Files must now be unchanged for \(Int(seconds))s")
+    }
+
     private func handle(_ event: FolderWatcher.Event, session current: Int) {
         guard session == current, let root else { return }
         switch event {

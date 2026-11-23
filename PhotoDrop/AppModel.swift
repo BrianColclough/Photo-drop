@@ -53,14 +53,12 @@ final class AppModel {
     }
 
     private enum Keys {
-        static let watching = "watching"
         static let albumTitle = "albumTitle"
         static let settleSeconds = "settleSeconds"
-        static let preparedFolders = "preparedFolders"
-        static let recordingStarted = "recordingExistingStarted"
     }
 
     static let defaultAlbum = "Camera Photos"
+    static let settleRange = 5...600
 
     static var ledgerURL: URL {
         FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
@@ -71,6 +69,7 @@ final class AppModel {
     private(set) var folderPath: String?
     private(set) var albumTitle: String
     private(set) var isWatching: Bool
+    private(set) var settleSeconds: Int
     private(set) var blocker: Blocker?
     private(set) var status = ImportCoordinator.Status()
     private(set) var importedToday = 0
@@ -78,29 +77,29 @@ final class AppModel {
     private(set) var openAtLogin = false
     private(set) var loginItemNote: String?
     private var knownAlbums: [String] = []
+    private var coordinator: ImportCoordinator?
 
     @ObservationIgnored private let defaults: UserDefaults
+    @ObservationIgnored private let record: ImportRecord
     @ObservationIgnored private let folderAccess: FolderAccess
     @ObservationIgnored private let photos = PhotosImporter()
     @ObservationIgnored private let albumImporter: AlbumImporter
-    @ObservationIgnored private let coordinator: ImportCoordinator?
+    @ObservationIgnored private var updatesTask: Task<Void, Never>?
     @ObservationIgnored private var queuedWork: Task<Void, Never>?
 
     init() {
         let defaults = UserDefaults.standard
+        let record = ImportRecord(fileURL: Self.ledgerURL, defaults: defaults)
         let title = defaults.string(forKey: Keys.albumTitle) ?? Self.defaultAlbum
-        let importer = AlbumImporter(title: title)
+        let savedSettle = defaults.integer(forKey: Keys.settleSeconds)
         self.defaults = defaults
+        self.record = record
         folderAccess = FolderAccess(defaults: defaults)
         albumTitle = title
-        albumImporter = importer
-        isWatching = defaults.bool(forKey: Keys.watching)
-        do {
-            coordinator = try ImportCoordinator(ledgerURL: Self.ledgerURL, importer: importer) { FileLog.shared.write($0) }
-        } catch {
-            coordinator = nil
-            blocker = .problem("Could not open the import record: \(error.localizedDescription)")
-        }
+        albumImporter = AlbumImporter(title: title)
+        isWatching = record.watchingIsOn
+        settleSeconds = savedSettle > 0 ? Self.settleRange.clamping(savedSettle) : 60
+        openRecord()
 
         folderAccess.onAvailabilityChange = { [weak self] available in
             FileLog.shared.write(available ? "Drive connected" : "Drive not connected")
@@ -114,13 +113,6 @@ final class AppModel {
         folderAccess.refresh()
         folderPath = folderAccess.savedPath
 
-        if let updates = coordinator?.updates {
-            Task { [weak self] in
-                for await update in updates {
-                    self?.handle(update)
-                }
-            }
-        }
         observe(NSApplication.didBecomeActiveNotification) { model in
             model.refreshLoginItem()
             if model.blocker == .photosAccessNeeded { model.enqueueReconcile() }
@@ -190,8 +182,35 @@ final class AppModel {
 
     func setWatching(_ on: Bool) {
         isWatching = on
-        defaults.set(on, forKey: Keys.watching)
+        record.watchingIsOn = on
         enqueueReconcile()
+    }
+
+    func setSettleSeconds(_ seconds: Int) {
+        let seconds = Self.settleRange.clamping(seconds)
+        guard seconds != settleSeconds else { return }
+        settleSeconds = seconds
+        defaults.set(seconds, forKey: Keys.settleSeconds)
+        enqueue { await $0.coordinator?.setSettleInterval(TimeInterval(seconds)) }
+    }
+
+    func resetImportRecord() {
+        guard confirmResettingImportRecord() else { return }
+        isWatching = false
+        enqueue { model in
+            await model.closeRecord()
+            model.blocker = nil
+            do {
+                try model.record.reset()
+                FileLog.shared.write("Reset the import record: watching is off, and the first-time question will be asked when it is switched on again")
+            } catch {
+                let problem = "Could not delete the import record: \(error.localizedDescription)"
+                model.blocker = .problem(problem)
+                FileLog.shared.write(problem)
+            }
+            model.openRecord()
+            model.refreshRecent()
+        }
     }
 
     func selectAlbum(_ name: String) {
@@ -229,43 +248,76 @@ final class AppModel {
     }
 
     private func reconcile() async {
-        guard let coordinator else { return }
+        guard coordinator != nil else { return }
         guard isWatching, folderAccess.hasSavedFolder else {
-            await coordinator.stop()
+            await coordinator?.stop()
             blocker = nil
             return
         }
         guard await PhotosImporter.requestAuthorization() == .authorized else {
-            await coordinator.stop()
+            await coordinator?.stop()
             blocker = .photosAccessNeeded
             return
         }
         do {
             _ = try await photos.findOrCreateAlbum(titled: albumTitle)
         } catch {
-            await coordinator.stop()
+            await coordinator?.stop()
             blocker = .problem("Could not open the album in Photos: \(error.localizedDescription)")
             return
         }
         loadAlbumsIfAllowed()
 
         guard folderAccess.refresh(), let folder = folderAccess.folderURL else {
-            await coordinator.stop()
+            await coordinator?.stop()
             blocker = .driveNotConnected
             return
         }
         blocker = nil
+        if !record.fileExists {
+            await closeRecord()
+            openRecord()
+            refreshRecent()
+        }
+        guard let coordinator else { return }
         let root = ImportCoordinator.realURL(folder)
         await coordinator.start(
             root: root,
-            settleInterval: settleSeconds,
+            settleInterval: TimeInterval(settleSeconds),
             recordExistingSince: existingFilesCutoff(for: root.path)
         )
     }
 
-    private var settleSeconds: TimeInterval {
-        let saved = defaults.double(forKey: Keys.settleSeconds)
-        return saved > 0 ? saved : 60
+    // MARK: - The import record
+
+    private func openRecord() {
+        if record.forgetPreparedFoldersIfFileIsMissing() {
+            FileLog.shared.write("The import record is missing: the first-time question will be asked again")
+        }
+        do {
+            let opened = try ImportCoordinator(ledgerURL: record.fileURL, importer: albumImporter) { FileLog.shared.write($0) }
+            coordinator = opened
+            let updates = opened.updates
+            updatesTask = Task { [weak self, weak opened] in
+                for await update in updates {
+                    // A late update from a record that has since been reset must not mark its folder as prepared.
+                    guard let self, let opened, self.coordinator === opened else { return }
+                    self.handle(update)
+                }
+            }
+        } catch {
+            blocker = .problem("Could not open the import record: \(error.localizedDescription)")
+        }
+    }
+
+    private func closeRecord() async {
+        guard let closing = coordinator else { return }
+        await closing.stop()
+        closing.ledger.close()
+        coordinator = nil
+        updatesTask?.cancel()
+        updatesTask = nil
+        status = ImportCoordinator.Status()
     }
 
     private func handle(_ update: ImportCoordinator.Update) {
@@ -275,39 +327,27 @@ final class AppModel {
         case .ledgerChanged:
             refreshRecent()
         case .existingFilesRecorded(let root):
-            markPrepared(root.path)
+            record.markPrepared(root.path)
         }
     }
 
     // MARK: - First run for a folder
 
     private func existingFilesCutoff(for folder: String) -> Date? {
-        if (defaults.stringArray(forKey: Keys.preparedFolders) ?? []).contains(folder) { return nil }
-
-        var started = defaults.dictionary(forKey: Keys.recordingStarted) as? [String: Date] ?? [:]
-        if let unfinished = started[folder] { return unfinished }
-
+        switch record.existingFiles(in: folder) {
+        case .alreadyDealtWith: return nil
+        case .stillBeingRecorded(let since): return since
+        case .mustAsk: break
+        }
         guard askToTreatExistingFilesAsImported(in: folder) else {
             FileLog.shared.write("First time watching \(folder): importing everything in it")
-            markPrepared(folder)
+            record.markPrepared(folder)
             return nil
         }
         FileLog.shared.write("First time watching \(folder): treating what is already there as imported")
         let now = Date()
-        started[folder] = now
-        defaults.set(started, forKey: Keys.recordingStarted)
+        record.startRecordingExistingFiles(in: folder, at: now)
         return now
-    }
-
-    private func markPrepared(_ folder: String) {
-        var prepared = defaults.stringArray(forKey: Keys.preparedFolders) ?? []
-        if !prepared.contains(folder) {
-            prepared.append(folder)
-            defaults.set(prepared, forKey: Keys.preparedFolders)
-        }
-        var started = defaults.dictionary(forKey: Keys.recordingStarted) ?? [:]
-        started[folder] = nil
-        defaults.set(started, forKey: Keys.recordingStarted)
     }
 
     private func askToTreatExistingFilesAsImported(in folder: String) -> Bool {
@@ -320,13 +360,31 @@ final class AppModel {
         return alert.runModal() == .alertFirstButtonReturn
     }
 
+    private func confirmResettingImportRecord() -> Bool {
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = "Reset the import record?"
+        alert.informativeText = """
+            Photo Drop will forget which files it has already imported, and watching will be switched off.
+
+            The next time you switch watching on, it will ask again whether to treat the files already in the folder \
+            as imported or to import everything. Nothing in Photos or in the folder is changed.
+            """
+        let reset = alert.addButton(withTitle: "Reset")
+        reset.hasDestructiveAction = true
+        reset.keyEquivalent = ""
+        alert.addButton(withTitle: "Cancel")
+        NSApp.activate()
+        return alert.runModal() == .alertFirstButtonReturn
+    }
+
     // MARK: - Refreshing what is shown
 
     private func refreshRecent() {
-        guard let ledger = coordinator?.ledger else { return }
+        let ledger = coordinator?.ledger
         let root = folderPath.map { ImportCoordinator.realURL(URL(fileURLWithPath: $0)) }
-        recent = ((try? ledger.recent(limit: 100)) ?? []).map { RecentImport($0, under: root) }
-        importedToday = (try? ledger.importedCount(since: Calendar.current.startOfDay(for: .now))) ?? 0
+        recent = ((try? ledger?.recent(limit: 100)) ?? []).map { RecentImport($0, under: root) }
+        importedToday = (try? ledger?.importedCount(since: Calendar.current.startOfDay(for: .now))) ?? 0
     }
 
     private func refreshLoginItem() {
@@ -351,5 +409,11 @@ final class AppModel {
                 if let self { action(self) }
             }
         }
+    }
+}
+
+private extension ClosedRange {
+    func clamping(_ value: Bound) -> Bound {
+        Swift.min(Swift.max(value, lowerBound), upperBound)
     }
 }

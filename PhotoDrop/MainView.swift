@@ -35,6 +35,11 @@ struct MainView: View {
                 }
             }
 
+            Stepper(value: settleSeconds, in: AppModel.settleRange, step: 5) {
+                Text("Import a file after it has been unchanged for \(model.settleSeconds) seconds")
+                    .monospacedDigit()
+            }
+
             HStack {
                 Toggle("Watch for new photos", isOn: watching)
                     .toggleStyle(.switch)
@@ -103,6 +108,10 @@ struct MainView: View {
 
     private var watching: Binding<Bool> {
         Binding { model.isWatching } set: { model.setWatching($0) }
+    }
+
+    private var settleSeconds: Binding<Int> {
+        Binding { model.settleSeconds } set: { model.setSettleSeconds($0) }
     }
 
     private var openAtLogin: Binding<Bool> {

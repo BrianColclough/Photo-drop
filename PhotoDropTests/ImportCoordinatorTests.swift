@@ -188,6 +188,21 @@ func waitForStragglers() async throws {
         }
     }
 
+    @Test func waitTimeChangedWhileWatchingAppliesToFilesAlreadyWaiting() async throws {
+        var timing = ImportCoordinator.Timing.fast
+        timing.settle = 600
+        try await withHarness(timing) { harness in
+            try await harness.start()
+            try harness.write("DSC016.jpg")
+            try await waitForStragglers()
+            #expect(harness.importer.requests.isEmpty)
+
+            await harness.coordinator.setSettleInterval(1)
+            #expect(try await eventually { harness.importer.requests.count == 1 })
+            #expect(try harness.importedPaths().count == 1)
+        }
+    }
+
     @Test func renamedParentFolderIsNotImportedAgain() async throws {
         try await withHarness { harness in
             try await harness.start()

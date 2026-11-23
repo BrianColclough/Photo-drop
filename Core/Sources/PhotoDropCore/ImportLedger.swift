@@ -100,10 +100,19 @@ public final class ImportLedger: @unchecked Sendable {
     }
 
     deinit {
-        for statement in statements.values {
-            sqlite3_finalize(statement)
+        close()
+    }
+
+    // Must be called before the file is deleted: an open ledger keeps writing to the deleted file.
+    public func close() {
+        lock.withLock {
+            for statement in statements.values {
+                sqlite3_finalize(statement)
+            }
+            statements = [:]
+            sqlite3_close(db)
+            db = nil
         }
-        sqlite3_close(db)
     }
 
     public func check(_ url: URL) throws -> LedgerCheck {
@@ -315,6 +324,7 @@ public final class ImportLedger: @unchecked Sendable {
 
     private func prepared(_ sql: String) throws -> OpaquePointer {
         if let cached = statements[sql] { return cached }
+        guard db != nil else { throw LedgerError(message: "The import record is closed") }
         var statement: OpaquePointer?
         guard sqlite3_prepare_v2(db, sql, -1, &statement, nil) == SQLITE_OK, let statement else {
             throw lastError()
