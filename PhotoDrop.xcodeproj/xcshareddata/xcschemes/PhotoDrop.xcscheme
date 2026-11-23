@@ -39,6 +39,17 @@
          </BuildableReference>
       </MacroExpansion>
       <Testables>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "653FF99D419F2F10FA8BB9F1"
+               BuildableName = "PhotoDropTests.xctest"
+               BlueprintName = "PhotoDropTests"
+               ReferencedContainer = "container:PhotoDrop.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <CommandLineArguments>
       </CommandLineArguments>

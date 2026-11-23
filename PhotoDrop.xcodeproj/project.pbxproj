@@ -9,14 +9,27 @@
 /* Begin PBXBuildFile section */
 		064BB79B29FAB86C55B59522 /* PhotosImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC6DE30C8B9786FCF7D8D041 /* PhotosImporter.swift */; };
 		06B2AF065C011A4A247E3DA9 /* PhotoDropApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E7F9F3F63F3E4C5CF9191F /* PhotoDropApp.swift */; };
+		178700C69FB8445852867C1E /* ImportCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D2C544CFA24F3A1DE8F1599 /* ImportCoordinator.swift */; };
+		33F53C48C595746EC52BAD14 /* ImportCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC0241DFD5B71FBD74CBD8C /* ImportCoordinatorTests.swift */; };
+		3F6FF736EA167188076E1263 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E05F264AD88B8B7C7385ED4 /* AppModel.swift */; };
 		531450065D46D8CDBDDF25A5 /* PhotoDropCore in Frameworks */ = {isa = PBXBuildFile; productRef = F56969277E1D376905CB5F86 /* PhotoDropCore */; };
+		5763ED125037D1AE450553EE /* PhotosImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC6DE30C8B9786FCF7D8D041 /* PhotosImporter.swift */; };
 		60F18B54EB1279BEDF11E9BD /* FolderAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6335069E9F76FCC59076122 /* FolderAccess.swift */; };
+		68C94AC442F9AB3ED3337DCF /* ImportCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D2C544CFA24F3A1DE8F1599 /* ImportCoordinator.swift */; };
 		734D003A0A2779AC67F0FD4B /* FolderWatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95D7EAF5A3E54605E3991516 /* FolderWatcher.swift */; };
+		A3CAE663755C72706A928532 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5CD8B1B290E6E314010FB9 /* MainView.swift */; };
+		B5DE6B2C7568BFDAB87BA2B0 /* PhotoDropCore in Frameworks */ = {isa = PBXBuildFile; productRef = 829C8C212800F57CE35C86F5 /* PhotoDropCore */; };
 		B9ED4484BC97539DE06F2C0F /* LoginItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880BACCA1CF1FFD0F4501550 /* LoginItem.swift */; };
 		BB6E66720112E14CE4C4FB4E /* FileLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A49B0EA905065FEB3EF168DD /* FileLog.swift */; };
+		EF79CEC24665D08749838FBB /* FolderWatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95D7EAF5A3E54605E3991516 /* FolderWatcher.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0BC0241DFD5B71FBD74CBD8C /* ImportCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportCoordinatorTests.swift; sourceTree = "<group>"; };
+		1E05F264AD88B8B7C7385ED4 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		21048068EE446115A029DA71 /* PhotoDropTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PhotoDropTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D2C544CFA24F3A1DE8F1599 /* ImportCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportCoordinator.swift; sourceTree = "<group>"; };
+		4E5CD8B1B290E6E314010FB9 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		5FA233553F5B0BC709DCBACB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		86596DAEEB6C2EDE0F6764D7 /* PhotoDrop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotoDrop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		880BACCA1CF1FFD0F4501550 /* LoginItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginItem.swift; sourceTree = "<group>"; };
@@ -38,14 +51,31 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E22BBD331C62961D6840B512 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B5DE6B2C7568BFDAB87BA2B0 /* PhotoDropCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0FC4E04CED4A7670791A2F55 /* PhotoDropTests */ = {
+			isa = PBXGroup;
+			children = (
+				0BC0241DFD5B71FBD74CBD8C /* ImportCoordinatorTests.swift */,
+			);
+			path = PhotoDropTests;
+			sourceTree = "<group>";
+		};
 		648EFB372D37DC023E547BC1 = {
 			isa = PBXGroup;
 			children = (
 				C18B1DCA4700AC729B3A4293 /* Packages */,
 				7A87B19FB98DAD2A46B5A89F /* PhotoDrop */,
+				0FC4E04CED4A7670791A2F55 /* PhotoDropTests */,
 				80172F23AC3F3B86193963FE /* Products */,
 			);
 			sourceTree = "<group>";
@@ -53,11 +83,14 @@
 		7A87B19FB98DAD2A46B5A89F /* PhotoDrop */ = {
 			isa = PBXGroup;
 			children = (
+				1E05F264AD88B8B7C7385ED4 /* AppModel.swift */,
 				A49B0EA905065FEB3EF168DD /* FileLog.swift */,
 				C6335069E9F76FCC59076122 /* FolderAccess.swift */,
 				95D7EAF5A3E54605E3991516 /* FolderWatcher.swift */,
+				3D2C544CFA24F3A1DE8F1599 /* ImportCoordinator.swift */,
 				5FA233553F5B0BC709DCBACB /* Info.plist */,
 				880BACCA1CF1FFD0F4501550 /* LoginItem.swift */,
+				4E5CD8B1B290E6E314010FB9 /* MainView.swift */,
 				BF263FAA70451C96E9E7C3C5 /* PhotoDrop.entitlements */,
 				B2E7F9F3F63F3E4C5CF9191F /* PhotoDropApp.swift */,
 				FC6DE30C8B9786FCF7D8D041 /* PhotosImporter.swift */,
@@ -69,6 +102,7 @@
 			isa = PBXGroup;
 			children = (
 				86596DAEEB6C2EDE0F6764D7 /* PhotoDrop.app */,
+				21048068EE446115A029DA71 /* PhotoDropTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -103,6 +137,25 @@
 			productReference = 86596DAEEB6C2EDE0F6764D7 /* PhotoDrop.app */;
 			productType = "com.apple.product-type.application";
 		};
+		653FF99D419F2F10FA8BB9F1 /* PhotoDropTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8005B699A1CA56B7C0FE6D39 /* Build configuration list for PBXNativeTarget "PhotoDropTests" */;
+			buildPhases = (
+				7D73A69AE32339624FA7CF69 /* Sources */,
+				E22BBD331C62961D6840B512 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PhotoDropTests;
+			packageProductDependencies = (
+				829C8C212800F57CE35C86F5 /* PhotoDropCore */,
+			);
+			productName = PhotoDropTests;
+			productReference = 21048068EE446115A029DA71 /* PhotoDropTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -113,6 +166,10 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					5683A0E7AB4C3D44640A526A = {
+						DevelopmentTeam = YTSN4CH5SH;
+						ProvisioningStyle = Automatic;
+					};
+					653FF99D419F2F10FA8BB9F1 = {
 						DevelopmentTeam = YTSN4CH5SH;
 						ProvisioningStyle = Automatic;
 					};
@@ -136,19 +193,34 @@
 			projectRoot = "";
 			targets = (
 				5683A0E7AB4C3D44640A526A /* PhotoDrop */,
+				653FF99D419F2F10FA8BB9F1 /* PhotoDropTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
+		7D73A69AE32339624FA7CF69 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EF79CEC24665D08749838FBB /* FolderWatcher.swift in Sources */,
+				68C94AC442F9AB3ED3337DCF /* ImportCoordinator.swift in Sources */,
+				33F53C48C595746EC52BAD14 /* ImportCoordinatorTests.swift in Sources */,
+				5763ED125037D1AE450553EE /* PhotosImporter.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EFDC815E67008766335C7DAE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3F6FF736EA167188076E1263 /* AppModel.swift in Sources */,
 				BB6E66720112E14CE4C4FB4E /* FileLog.swift in Sources */,
 				60F18B54EB1279BEDF11E9BD /* FolderAccess.swift in Sources */,
 				734D003A0A2779AC67F0FD4B /* FolderWatcher.swift in Sources */,
+				178700C69FB8445852867C1E /* ImportCoordinator.swift in Sources */,
 				B9ED4484BC97539DE06F2C0F /* LoginItem.swift in Sources */,
+				A3CAE663755C72706A928532 /* MainView.swift in Sources */,
 				06B2AF065C011A4A247E3DA9 /* PhotoDropApp.swift in Sources */,
 				064BB79B29FAB86C55B59522 /* PhotosImporter.swift in Sources */,
 			);
@@ -157,6 +229,22 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		0D9ABD70BF9167D1C23FA348 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.briancolclough.PhotoDropTests;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
 		1FF8DB93B75DE327942DDB01 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -330,6 +418,22 @@
 			};
 			name = Release;
 		};
+		DB05EA9C8D08023449F45D3C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.briancolclough.PhotoDropTests;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -338,6 +442,15 @@
 			buildConfigurations = (
 				3027030BD6D1BB11CCAE1955 /* Debug */,
 				3B8CAED0D41BF45FD1251CE8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		8005B699A1CA56B7C0FE6D39 /* Build configuration list for PBXNativeTarget "PhotoDropTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0D9ABD70BF9167D1C23FA348 /* Debug */,
+				DB05EA9C8D08023449F45D3C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
@@ -361,6 +474,10 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		829C8C212800F57CE35C86F5 /* PhotoDropCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PhotoDropCore;
+		};
 		F56969277E1D376905CB5F86 /* PhotoDropCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = PhotoDropCore;

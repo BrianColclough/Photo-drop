@@ -39,4 +39,22 @@ targets:
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.photography
         CODE_SIGN_ENTITLEMENTS: PhotoDrop/PhotoDrop.entitlements
         ENABLE_HARDENED_RUNTIME: YES
-    scheme: {}
+    scheme:
+      testTargets:
+        - PhotoDropTests
+
+  PhotoDropTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - PhotoDropTests
+      - PhotoDrop/ImportCoordinator.swift
+      - PhotoDrop/FolderWatcher.swift
+      - PhotoDrop/PhotosImporter.swift
+    dependencies:
+      - package: PhotoDropCore
+        product: PhotoDropCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.briancolclough.PhotoDropTests
+        GENERATE_INFOPLIST_FILE: YES
