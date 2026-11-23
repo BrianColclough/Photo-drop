@@ -193,6 +193,7 @@ PhotoDrop/                   The app
   FileLog.swift              Writes the log
   Info.plist                 The wording macOS shows when asking for Photos access
   PhotoDrop.entitlements     The permissions the app asks macOS for
+Tools/make_icon.swift        Draws the app icon; the result is kept in PhotoDrop/Assets.xcassets
 PhotoDropTests/              Tests for the import flow and for resetting the record
 Core/                        The rules, as a separate Swift package with its own tests
   Sources/PhotoDropCore/

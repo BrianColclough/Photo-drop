@@ -37,6 +37,7 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_FILE: PhotoDrop/Info.plist
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.photography
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         CODE_SIGN_ENTITLEMENTS: PhotoDrop/PhotoDrop.entitlements
         ENABLE_HARDENED_RUNTIME: YES
     scheme:

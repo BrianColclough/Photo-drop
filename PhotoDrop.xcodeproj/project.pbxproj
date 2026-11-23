@@ -12,6 +12,7 @@
 		178700C69FB8445852867C1E /* ImportCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D2C544CFA24F3A1DE8F1599 /* ImportCoordinator.swift */; };
 		33F53C48C595746EC52BAD14 /* ImportCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC0241DFD5B71FBD74CBD8C /* ImportCoordinatorTests.swift */; };
 		3F6FF736EA167188076E1263 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E05F264AD88B8B7C7385ED4 /* AppModel.swift */; };
+		50BC33DF3A814B436BF9826A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 81DD636570AE6AE3A7947DC4 /* Assets.xcassets */; };
 		531450065D46D8CDBDDF25A5 /* PhotoDropCore in Frameworks */ = {isa = PBXBuildFile; productRef = F56969277E1D376905CB5F86 /* PhotoDropCore */; };
 		5763ED125037D1AE450553EE /* PhotosImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC6DE30C8B9786FCF7D8D041 /* PhotosImporter.swift */; };
 		60F18B54EB1279BEDF11E9BD /* FolderAccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6335069E9F76FCC59076122 /* FolderAccess.swift */; };
@@ -36,6 +37,7 @@
 		4C8F425913E30EA3F03F1B6B /* ImportRecordTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportRecordTests.swift; sourceTree = "<group>"; };
 		4E5CD8B1B290E6E314010FB9 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		5FA233553F5B0BC709DCBACB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		81DD636570AE6AE3A7947DC4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		86596DAEEB6C2EDE0F6764D7 /* PhotoDrop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotoDrop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		880BACCA1CF1FFD0F4501550 /* LoginItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginItem.swift; sourceTree = "<group>"; };
 		8C0408608201934B4FA65745 /* Core */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Core; path = Core; sourceTree = SOURCE_ROOT; };
@@ -90,6 +92,7 @@
 			isa = PBXGroup;
 			children = (
 				1E05F264AD88B8B7C7385ED4 /* AppModel.swift */,
+				81DD636570AE6AE3A7947DC4 /* Assets.xcassets */,
 				A49B0EA905065FEB3EF168DD /* FileLog.swift */,
 				C6335069E9F76FCC59076122 /* FolderAccess.swift */,
 				95D7EAF5A3E54605E3991516 /* FolderWatcher.swift */,
@@ -130,6 +133,7 @@
 			buildConfigurationList = 0DDB49F21EE69DAB287EB760 /* Build configuration list for PBXNativeTarget "PhotoDrop" */;
 			buildPhases = (
 				EFDC815E67008766335C7DAE /* Sources */,
+				6D8EE5753BE3904997381B4D /* Resources */,
 				BD5018013CBB40F074770DF0 /* Frameworks */,
 			);
 			buildRules = (
@@ -204,6 +208,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		6D8EE5753BE3904997381B4D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				50BC33DF3A814B436BF9826A /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		7D73A69AE32339624FA7CF69 /* Sources */ = {
